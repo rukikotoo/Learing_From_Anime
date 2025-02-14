@@ -19,6 +19,7 @@ def extract_dialogues_from_ass(file_path):
     japanese_dialogues = []
     chinese_dialogues = []
 
+
     for line in lines:
         # 匹配 Dialogue 行，并提取对话内容
         if line.startswith("Dialogue:"):
