@@ -50,14 +50,14 @@ def generate_grammar_explanation(japanese_sentence):
     """
     try:
         client = OpenAI(
-            api_key="sk-G2M4d4koiuSxs64dwEFbg7x9PFKqVf3h9DOulKUaO0lnDaHb",
-            base_url="https://api.openai-proxy.org/v1"
+            api_key="",
+            base_url=""
         )
         with open('prompt.txt', 'r', encoding='utf-8') as file:
             prompt = file.read()
 
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="",
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user",
