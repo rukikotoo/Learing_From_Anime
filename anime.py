@@ -1,12 +1,12 @@
 import os
 import re
 import genanki
-import openai
 from openai import OpenAI
+import openai
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import tqdm
 import signal
-
-import re
+import sys
 
 def extract_dialogues_from_ass(file_path):
     """
@@ -44,20 +44,20 @@ def extract_dialogues_from_ass(file_path):
     return list(zip(japanese_dialogues, chinese_dialogues))
 
 
-def generate_grammar_explanation(llm_api_key, japanese_sentence):
+def generate_grammar_explanation(japanese_sentence):
     """
     使用 LLM 为日文句子生成语法解释。
     """
     try:
         client = OpenAI(
-            api_key="",
-            base_url=""
+            api_key="sk-G2M4d4koiuSxs64dwEFbg7x9PFKqVf3h9DOulKUaO0lnDaHb",
+            base_url="https://api.openai-proxy.org/v1"
         )
         with open('prompt.txt', 'r', encoding='utf-8') as file:
             prompt = file.read()
 
         response = client.chat.completions.create(
-            model="",
+            model="gpt-4o",
             messages=[
                 {"role": "system", "content": prompt},
                 {"role": "user",
@@ -69,12 +69,13 @@ def generate_grammar_explanation(llm_api_key, japanese_sentence):
         return explanation
     except Exception as e:
         print(f"生成语法解释时出错：{e}")
+        sys.exit()  # 直接终止程序
         return "语法解释生成失败，请稍后重试。"
 
 
 def process_file_into_deck(file_path, llm_api_key, model, output_file):
     """
-    修改后的函数：处理文件并每10次API调用保存一次
+    修改后的函数：处理文件并使用多线程加速 API 调用。
     """
     dialogues = extract_dialogues_from_ass(file_path)
     deck_name = os.path.splitext(os.path.basename(file_path))[0]
@@ -83,31 +84,32 @@ def process_file_into_deck(file_path, llm_api_key, model, output_file):
         name=f"{deck_name} 卡片库（含语法解释）"
     )
 
-    api_call_count = 0  # API调用计数器
+    # 使用线程池并发处理 API 调用
+    with ThreadPoolExecutor() as executor:
+        future_to_dialogue = {
+            executor.submit(generate_grammar_explanation, japanese): (japanese, chinese)
+            for japanese, chinese in dialogues
+        }
 
-    with tqdm.tqdm(total=len(dialogues), desc=f"处理 {deck_name}", unit="卡片") as pbar:
-        for japanese, chinese in dialogues:
-            grammar_explanation = generate_grammar_explanation(llm_api_key, japanese)
-            back_content = f"{chinese}<br><br>{grammar_explanation}"
+        with tqdm.tqdm(total=len(dialogues), desc=f"处理 {deck_name}", unit="卡片") as pbar:
+            for future in as_completed(future_to_dialogue):
+                japanese, chinese = future_to_dialogue[future]
+                try:
+                    grammar_explanation = future.result()
+                    back_content = f"{chinese}<br><br>{grammar_explanation}"
 
-            note = genanki.Note(
-                model=model,
-                fields=[japanese, back_content]
-            )
-            deck.add_note(note)
+                    note = genanki.Note(
+                        model=model,
+                        fields=[japanese, back_content]
+                    )
+                    deck.add_note(note)
+                    save_deck_to_file(deck, output_file)
+                except Exception as e:
+                    print(f"处理句子时出错：{e}")
 
-            # 更新计数器并检查保存条件
-            api_call_count += 1
-            if api_call_count % 1 == 0:
-                save_deck_to_file(deck, output_file)
+                pbar.update(1)
 
-            pbar.update(1)
-
-    # 处理剩余不足10次的卡片
-    if api_call_count % 1 != 0:
-        save_deck_to_file(deck, output_file)
-
-    return deck
+    save_deck_to_file(deck, output_file)
 
 
 def save_deck_to_file(deck, output_file):
@@ -155,7 +157,7 @@ if __name__ == "__main__":
                 output_file = os.path.splitext(filename)[0] + ".apkg"
                 print(f"正在处理文件：{file_path}")
 
-                # 处理文件并自动保存
+                # 处理文件
                 process_file_into_deck(file_path, llm_api_key, model, output_file)
 
     except Exception as e:
