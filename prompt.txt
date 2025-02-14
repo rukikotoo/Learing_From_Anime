@@ -1,0 +1,101 @@
+严格按照下列格式输出：
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>日语深度语法解析</title>
+    <style>
+        .grammar-point { color: #2c3e50; margin-left: 20px }
+        .syntax-type { color: #c0392b; font-weight: 700 }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 核心解析区块 -->
+        <div class="syntax-section">
+            <h3>句子结构分析</h3>
+            <ol class="clause-structure">
+                <!-- 动态生成语法成分 -->
+                <li>
+                    <span class="syntax-type">[成分类型]</span>
+                    <div class="grammar-point">
+                        • 构成要素：<span>[构成要素]</span><br>
+                        • 语法功能：<span>[功能说明]</span><br>
+                        • 接续规则：<span>[连接方式]</span>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="lexical-section">
+            <h3>词汇解析表</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>词语</th>
+                        <th>读音</th>
+                        <th>词性</th>
+                        <th>原形</th>
+                        <th>语义解析</th>
+                        <th>语法特征</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 动态生成词汇行 -->
+                    <tr>
+                        <td>[n]</td>
+                        <td>[表記]</td>
+                        <td>[ふりがな]</td>
+                        <td>[品詞]</td>
+                        <td>[基本形]</td>
+                        <td>[意味]</td>
+                        <td>
+                            <ul class="grammar-detail">
+                                <li>活用类型：[活用分類]</li>
+                                <li>句子成分：[文成分]</li>
+                                <li>修饰关系：[修飾関係]</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="verb-analysis">
+            <h3>动词形态学解析</h3>
+            <ul>
+                <!-- 动态生成动词分析 -->
+                <li>
+                    <div class="verb-header">
+                        <span class="surface-form">[表面形]</span>
+                        <span class="arrow">→</span>
+                        <span class="d-form">[辞書形]</span>
+                        <span class="verb-type">([活用類型])</span>
+                    </div>
+                    <div class="morph-breakdown">
+                        語幹：[語幹] + 活用尾：[語尾]<br>
+                        時制：[ tense ] / 相：[ aspect ] / 態：[ voice ]<br>
+                        接続形式：[ preceding-form ]
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="grammar-section">
+            <h3>综合语法解析</h3>
+            <ul>
+                <!-- 动态生成语法规则 -->
+                <li>
+                    <span class="rule-cat">[语法范畴]</span>
+                    <div class="rule-detail">
+                        [具体语法现象]<br>
+                        <em>规则说明：</em>[语法规则]<br>
+                        <em>应用实例：</em>[本句中的应用]
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
